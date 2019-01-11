@@ -17,12 +17,14 @@ class Platform extends Component {
   changeUnit = (dir) => {
     if(dir === 1){
       if(this.state.unit === "day") this.setState({unit:"options"});
-      if(this.state.unit === "week") this.setState({unit:"day"});
-      if(this.state.unit === "month") this.setState({unit:"week"});
+      else if(this.state.unit === "week") this.setState({unit:"day"});
+      else if(this.state.unit === "month") this.setState({unit:"week"});
+      else if(this.state.unit === "options") this.setState({unit:"month"});
     }else{
-      if(this.state.unit === "week") this.setState({unit:"month"});
-      if(this.state.unit === "day") this.setState({unit:"week"});
       if(this.state.unit === "options") this.setState({unit:"day"});
+      else if(this.state.unit === "month") this.setState({unit:"options"});
+      else if(this.state.unit === "week") this.setState({unit:"month"});
+      else if(this.state.unit === "day") this.setState({unit:"week"});
     }
   }
 
@@ -44,9 +46,14 @@ class Platform extends Component {
   render() {
     return(
       <div>
-        <Swiper callback = {this.changeUnit}/>
-        {this.Options()}
-        <Spending {...this.props} unit = {this.state.unit} callback = {this.props.spend}/>
+        <div class = "row">
+          <div class = "col-lg-12 text-center">
+            <h1> snakes </h1>
+            <Swiper callback = {this.changeUnit}/>
+            {this.Options()}
+            <Spending {...this.props} unit = {this.state.unit} callback = {this.props.spend}/>
+          </div>
+        </div>
       </div>
     );
   }

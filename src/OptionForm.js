@@ -9,61 +9,40 @@ class OptionForm extends Component {
     this.state = {
       income:props.income,
       bills:props.bills,
-      visible:true
     };
-  }
-
-  componentDidMount = () => {
-    this.hydrateStateWithLocalStorage();
-  } 
-
-  hydrateStateWithLocalStorage = () =>{
-    for (let key in this.state) {
-      if (localStorage.hasOwnProperty(key)) {
-        let value = localStorage.getItem(key);
-        try {
-          value = JSON.parse(value);
-          this.setState({ [key]: value });
-        } catch (e) {
-          this.setState({ [key]: value });
-        }
-      }
-    }
-  }
-
-  switchVisible = (e) => {
-    e.preventDefault();
-    this.setState((state) => ({
-      visible:!this.state.visible
-    }));
   }
 
   handleSubmit = (e) => {
     e.preventDefault();
-    this.props.callback(this.state);
+    let items = {};
+    Object.keys(this.state).map(
+    i => items[i] = this.state[i] || 0 );
+    this.setState(items);
+    this.props.set(items);
+  }
+
+  resetSpending = (e) => {
+    this.props.reset();
   }
 
   handleInputChange = (e) => {
     const target = e.target;
     const value = target.type === "number" ? parseInt(target.value, 10) : target.value;
     const name = target.name;
-
-    this.setState({
-      [name]: value
-    });
+    this.setState({[name]: value});
   }
 
   render() {
     return(
-      <div>
-        {this.state.visible && 
+      <div className = "row justify-content-md-center">
+        <div className = "col-md-auto text-left">
           <form onSubmit={this.handleSubmit}>
             <label>
               Income:
               <input 
                 name="income"
                 type="number" 
-                value={this.state.income} 
+                value={!this.state.income&& this.state.income!== 0 ? '' : this.state.income}
                 onChange={this.handleInputChange} />
             </label>
             <br />
@@ -72,7 +51,7 @@ class OptionForm extends Component {
               <input 
                 name="bills"
                 type="number" 
-                value={this.state.bills} 
+                value={!this.state.bills && this.state.bills !== 0 ? '' : this.state.bills} 
                 onChange={this.handleInputChange} />
             </label>
             <br />
@@ -81,7 +60,9 @@ class OptionForm extends Component {
               value="Submit" 
               disabled = {(this.state.disabled)? "disabled" : ""}/>
           </form>
-        }
+          
+          <button onClick = {this.resetSpending}> Reset Spending </button>  
+        </div> 
       </div>
     );
   }

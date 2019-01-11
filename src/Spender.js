@@ -1,18 +1,17 @@
 
 import React, { Component } from 'react';
 import Konva from 'konva';
-import { Stage, Layer, Circle, Text } from 'react-konva';
+import { Stage, Layer, Circle, Rect, Text } from 'react-konva';
 
 
 class Spender extends Component {
 
   constructor(props){
     super(props); 
-    // this.state = {}
     this.timer = 0;
     this.speed = 3500;
-    this.width = Math.min(window.innerHeight, window.innerWidth)/1.5;
-    this.height = this.width;
+    this.width = window.innerWidth;
+    this.height = window.innerHeight/2;
     this.area = 3*(this.height*this.height/4);
     this.gradient = ctx.createRadialGradient(0,0,0,0,0,this.width/2);
     this.gradient.addColorStop(0.0, "rgba(255, 255, 255, 0.0)");
@@ -50,17 +49,17 @@ class Spender extends Component {
     if(this.props.unit === "month") {
       displayedBudget = this.props.budgetMonth;
       displayedSpending = this.props.spendingMonth;
-      factor = 1;
+      factor = .8;
     }
     else if(this.props.unit === "week"){
       displayedBudget = this.props.budgetWeek;
       displayedSpending = this.props.spendingWeek;
-      factor = .9;
+      factor = .7;
     }
     else if(this.props.unit === "day"){
       displayedBudget = this.props.budgetDay;
       displayedSpending = this.props.spendingDay;
-      factor = .8;
+      factor = .6;
     }
     
     if(displayedSpending > displayedBudget) displayedSpending = displayedBudget;
@@ -72,10 +71,10 @@ class Spender extends Component {
     if(remainingRadius < 0 || isNaN(remainingRadius)) remainingRadius = 0;
 
     return(
-      <div onMouseOut = {this.amountRelease} onMouseUp = {this.amountRelease}>
-        <Stage width={this.width} height={this.height}>
-          <Layer>
-            <Circle x={this.width/2} y={this.height/2} radius={totalRadius} fill="white" opacity = ".5" stroke = "black" strokeWidth = "5"/>
+      <div onMouseOut = {this.amountRelease} onMouseUp = {this.amountRelease} >
+        <Stage width={this.width} height={this.height} >
+          <Layer >
+            <Circle x={this.width/2} y={this.height/2} radius={totalRadius} fill="white" opacity = {.5} stroke = "black" strokeWidth = {5}/>
             <Circle x={this.width/2} y={this.height/2} radius={remainingRadius} fill="#50d878" />
             <Circle x={this.width/2} y={this.height/2} radius={temporaryRadius} fill="#278b43" />
             <Circle x={this.width/2} y={this.height/2} radius={totalRadius}
@@ -83,7 +82,6 @@ class Spender extends Component {
             fillPriority= 'radial-gradient'
             fill= {this.gradient}
             onMouseDown = {this.amountClick}
-            opacity = {.5}
             />
           </Layer>
         </Stage>
