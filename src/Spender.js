@@ -8,15 +8,36 @@ class Spender extends Component {
 
   constructor(props){
     super(props); 
+    this.refItem = React.createRef();
     this.timer = 0;
     this.speed = 3500;
-    this.width = window.innerWidth;
-    this.height = window.innerHeight/2;
-    this.area = 3*(this.height*this.height/4);
-    this.gradient = ctx.createRadialGradient(0,0,0,0,0,this.width/2);
-    this.gradient.addColorStop(0.0, "rgba(255, 255, 255, 0.0)");
-    this.gradient.addColorStop(0.4, "rgba(255, 255, 255, 0.2)");
-    this.gradient.addColorStop(1.00, "rgba(255, 255, 255, 0.3)");
+    // this.gradient = ctx.createRadialGradient(0,0,0,0,0,this.state.width/2);
+    // this.gradient.addColorStop(0.0, "rgba(255, 255, 255, 0.0)");
+    // this.gradient.addColorStop(0.4, "rgba(255, 255, 255, 0.2)");
+    // this.gradient.addColorStop(1.00, "rgba(255, 255, 255, 0.3)");
+    this.state = {
+      width:window.innerWidth,
+      height:window.innerHeight/2,
+      area:3*(window.innerHeight**2/4),
+    };
+  }
+
+  componentDidMount () {
+    window.addEventListener("resize", this.updateDimensions);
+    this.updateDimensions();
+  }
+
+  componentWillUnmount (){
+      window.removeEventListener("resize", this.updateDimensions);
+  }
+
+  updateDimensions = () => {
+    this.setState({
+      width: this.refItem.current.offsetWidth, 
+      height: window.innerHeight/2,
+      area:3*((window.innerHeight/2)**2/4),
+    });
+    // console.log( this.refItem.current.parentElement.curre);
   }
 
   amountClick = (e) => {
@@ -24,9 +45,7 @@ class Spender extends Component {
   }
 
   increaseAmount = () => {
-    var budget = this.props.unit === "day" ? this.props.budgetDay :
-      (this.props.unit === "week" ? this.props.budgetWeek : this.props.budgetMonth);
-    var increment = budget/this.speed;
+    var increment = this.props.budget/this.speed;
     if(this.speed > 2300) this.speed -= 25;
     this.props.increaseAmount(increment);
   }
@@ -41,45 +60,29 @@ class Spender extends Component {
     let totalRadius;
     let remainingRadius;
     let temporaryRadius;
-    let factor;
     
-    let displayedBudget = 1;
-    let displayedSpending = 1;
-    
-    if(this.props.unit === "month") {
-      displayedBudget = this.props.budgetMonth;
-      displayedSpending = this.props.spendingMonth;
-      factor = .8;
-    }
-    else if(this.props.unit === "week"){
-      displayedBudget = this.props.budgetWeek;
-      displayedSpending = this.props.spendingWeek;
-      factor = .7;
-    }
-    else if(this.props.unit === "day"){
-      displayedBudget = this.props.budgetDay;
-      displayedSpending = this.props.spendingDay;
-      factor = .6;
-    }
-    
+    let displayedBudget = this.props.budget;
+    let displayedSpending = this.props.spending;
     if(displayedSpending > displayedBudget) displayedSpending = displayedBudget;
-    totalRadius = factor * Math.sqrt(this.area/3.14);
-    remainingRadius = factor * Math.sqrt(this.area*(displayedBudget-displayedSpending)/displayedBudget/3.14);
-    temporaryRadius = factor * Math.sqrt(this.area*(displayedBudget-displayedSpending-this.props.amount)/displayedBudget/3.14);
+    
+    totalRadius = Math.sqrt(this.state.area/3.14);
+    remainingRadius = Math.sqrt(this.state.area*(displayedBudget-displayedSpending)/displayedBudget/3.14);
+    temporaryRadius = Math.sqrt(this.state.area*(displayedBudget-displayedSpending-this.props.amount)/displayedBudget/3.14);
 
+    if(totalRadius < 0 || isNaN(totalRadius)) totalRadius = 0;
     if(temporaryRadius < 0 || isNaN(temporaryRadius)) temporaryRadius = 0;
     if(remainingRadius < 0 || isNaN(remainingRadius)) remainingRadius = 0;
 
     return(
-      <div onMouseOut = {this.amountRelease} onMouseUp = {this.amountRelease} >
-        <Stage width={this.width} height={this.height} >
-          <Layer >
-            <Circle x={this.width/2} y={this.height/2} radius={totalRadius} fill="white" opacity = {.5} stroke = "black" strokeWidth = {5}/>
-            <Circle x={this.width/2} y={this.height/2} radius={remainingRadius} fill="#50d878" />
-            <Circle x={this.width/2} y={this.height/2} radius={temporaryRadius} fill="#278b43" />
-            <Circle x={this.width/2} y={this.height/2} radius={totalRadius}
+      <div ref = {this.refItem} onMouseOut = {this.amountRelease} onMouseUp = {this.amountRelease} >
+        <Stage width={this.state.width} height={this.state.height} >
+          <Layer>
+            <Circle x={this.state.width/2} y={this.state.height/2} radius={totalRadius} fill="white" opacity = {.5} stroke = "black" strokeWidth = {5}/>
+            <Circle x={this.state.width/2} y={this.state.height/2} radius={remainingRadius} fill="#50d878" />
+            <Circle x={this.state.width/2} y={this.state.height/2} radius={temporaryRadius} fill="#278b43" />
+            <Circle x={this.state.width/2} y={this.state.height/2} radius={totalRadius}
             stroke = "black" strokeWidth = {5}
-            fillPriority= 'radial-gradient'
+            fillPriority= "#green"
             fill= {this.gradient}
             onMouseDown = {this.amountClick}
             />

@@ -163,10 +163,25 @@ class App extends Component {
 
   render() {
     let content;
+    let values = {budget:0, spending:0, targetDate: this.state.targetDate, "unit":this.state.unit};
+    switch(this.state.unit){
+      case "day":
+        values["budget"] = this.state.budgetDay;
+        values["spending"] = this.state.spendingDay;
+        break;
+      case "week":
+        values["budget"] = this.state.budgetWeek;
+        values["spending"] = this.state.spendingWeek;
+        break;
+      case "month":
+        values["budget"] = this.state.budgetMonth;
+        values["spending"] = this.state.spendingMonth;
+        break;
+    }
     if(this.state.unit === "options"){
       content = <OptionForm {...this.state} set = {this.setOptions} reset = {this.reset}/>;
     } else {
-      content = <Spending {...this.state} unit = {this.state.unit} callback = {this.spend}/>;
+      content = <Spending {...values} unit = {this.state.unit} callback = {this.spend}/>;
     }
 
     return(

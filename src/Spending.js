@@ -28,7 +28,7 @@ class Spending extends Component {
 
   increaseAmount = (increment) => {
     this.setState((state) => ({
-      amount:state.amount + increment
+      amount:this.state.amount + increment
     }));
   }
 
@@ -36,7 +36,7 @@ class Spending extends Component {
     // if(this.state.amount > 0){
     return(
       <div>
-        Spending {Math.round(this.state.amount)}
+        Spending {Math.min(Math.round(this.state.amount), Math.round(this.props.budget))}
         <br />
         <button onClick = {this.commitAmount}> Confirm </button> 
         <button onClick = {this.cancelAmount}> Cancel </button>
@@ -48,22 +48,10 @@ class Spending extends Component {
   }
 
   Message = () => {
-    if(this.props.unit === "day") return( 
+    return( 
       <div>
-        <h1>$ {Math.round(remaining(this.props.budgetDay, this.props.spendingDay))}</h1>
-        for the rest of the day
-      </div>
-    );
-    if(this.props.unit === "week") return(
-      <div>
-        <h1>$ {Math.round(remaining(this.props.budgetWeek, this.props.spendingWeek))}</h1>
-        for the next {daysLeftInWeek(this.props.targetDate)} days
-      </div>
-    );
-    if(this.props.unit === "month") return(
-      <div>
-        <h1>$ {Math.round(remaining(this.props.budgetMonth, this.props.spendingMonth))}</h1>
-        for the next {daysLeftInMonth(this.props.targetDate)} days
+        <h1>$ {Math.round(remaining(this.props.budget, this.props.spending))}</h1>
+        for the rest of the {this.props.unit}
       </div>
     );
   }
